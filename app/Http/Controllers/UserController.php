@@ -14,19 +14,17 @@ use Validator;
 class UserController extends Controller
 {
     public function postRegister(Request $request){
-        throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
-    	$form_params = json_decode($request->form_params, true);
+    	
     	$user = new User();
-    	$user->name = $form_params['name'];
-    	$user->email = $form_params['email'];
-    	$user->password = bcrypt($form_params['password']);
+    	$user->name = $request->name;
+    	$user->email = $request->email;
+    	$user->password = bcrypt($request->password);
     	$user->save();
-        // $user = User::all();
         // $form_params = [
         //     'a' => 1,
         //     'b' => 2
         // ];
-    	return response()->json($form_params);
+    	return response()->json($user);
     }
 
     public function getUsers(Request $request){
@@ -34,26 +32,18 @@ class UserController extends Controller
     	return response()->json($users);
     }
 
-    function _responseJson($data, $count = 0)
-    {
-        return response()->json([
-            'code'=>AppException::ERR_NONE,
-            'message'=>[],
-            'count'=>$count,
-            'data'=>$data,
-        ]);
-    }
-
     public function postLogin(Request $request) {
 
         $request->validate([
             'email'=>'required',
             'password'=>'required',
+        ],[
+            'email.required' => 'Bạn chưa nhập email',
+            'password.required' => 'Bạn chưa nhập password',
         ]);
         $credentials = ['email' => $request->email, 'password' => $request->password];
         if(!Auth::attempt($credentials)){
-            dd('fail');
-            return response()->json(['message' => 'Sai thong tin']);
+            return response()->json(['message' => 'Sai thông tin đăng nhập !']);
         }
         // dd($request->user());
         $user = $request->user();
@@ -61,14 +51,16 @@ class UserController extends Controller
         // dd($tokenResult);
         $token = $tokenResult->token;
         
-        $token->expires_at = Carbon::now()->addMinutes(10);
+        $token->expires_at = Carbon::now()->addMinutes(15);
         // dd($token->expires_at);
         $token->save();
-
-        return response()->json([
+        return $this->_responseJson([
+            'user_id' => $user->id,
+            'name' => $user->name,
             'access_token' => $tokenResult->accessToken,
             'email'=>$user->email,
             'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
+            'created_at' => $user->created_at,
         ]);
     }
 
@@ -92,6 +84,6 @@ class UserController extends Controller
         if(!$user) {
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
         }
-        return $this->responseJson($user);
+        return $this->_responseJson($user);
     }
 }   

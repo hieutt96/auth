@@ -20,4 +20,14 @@ class Controller extends BaseController
             'data'=>$data,
         ]);
     }
+
+    function _responseJson($data, $count = 0)
+    {
+        return response()->json([
+            'code'=>AppException::ERR_NONE,
+            'message'=>[],
+            'count'=>$count,
+            'data'=>$data,
+        ]);
+    }
 }

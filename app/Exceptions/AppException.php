@@ -15,7 +15,10 @@ class AppException extends Exception
 	const ERR_ACCOUNT_NOT_FOUND = 1;
 	
 	const ERR_SYSTEM = 3;
-
+	const ERR_NOT_USER = 4;
+	const ERR_VALIDATION = 5;
+	const ERR_INVALID_TOKEN = 6;
+		
     protected $code;
 
     protected $message = [];
