@@ -14,17 +14,32 @@ use Validator;
 class UserController extends Controller
 {
     public function postRegister(Request $request){
-    	
+        $user = User::where('email', $request->email)->first();
+        if($user) {
+            throw new AppException(AppException::EMAIL_EXIST);
+            
+        }
+    	$request->validate([
+            'email' => 'required|unique:users,email',
+            'password' => 'required|min:6',
+        ],[
+            'email.required' => 'Bạn chưa điền Email',
+            'email.unique' => 'Email đã tồn tại trên hệ thống',
+            'password.required' => 'Bạn chưa nhập password',
+            'password.min' => 'Password phải lớn hơn 6 kí tự',
+        ]);
     	$user = new User();
     	$user->name = $request->name;
     	$user->email = $request->email;
     	$user->password = bcrypt($request->password);
     	$user->save();
-        // $form_params = [
-        //     'a' => 1,
-        //     'b' => 2
-        // ];
-    	return response()->json($user);
+    	return $this->_responseJson([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+            'created_at' => $user->created_at,
+            'verify_by' => $user->verify_by,
+        ]);
     }
 
     public function getUsers(Request $request){
@@ -41,11 +56,15 @@ class UserController extends Controller
             'email.required' => 'Bạn chưa nhập email',
             'password.required' => 'Bạn chưa nhập password',
         ]);
-        $credentials = ['email' => $request->email, 'password' => $request->password];
-        if(!Auth::attempt($credentials)){
-            return response()->json(['message' => 'Sai thông tin đăng nhập !']);
+        $user = User::where('email', $request->email)->first();
+        if(!$user) {
+            throw new AppException(AppException::ACCOUNT_NO_EXIST);
+            
         }
-        // dd($request->user());
+        $credentials = ['email' => $request->email, 'password' => $request->password, 'active' => 1];
+        if(!Auth::attempt($credentials)){
+            return response()->json(['message' => 'Sai thông tin đăng nhập hoặc tài khoản chưa được Active !']);
+        }
         $user = $request->user();
         $tokenResult = $user->createToken('Hieutt');
         // dd($tokenResult);
@@ -59,6 +78,8 @@ class UserController extends Controller
             'name' => $user->name,
             'access_token' => $tokenResult->accessToken,
             'email'=>$user->email,
+            'lvl' => $user->lvl,
+            'active' => $user->active,
             'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
             'created_at' => $user->created_at,
         ]);
