@@ -18,6 +18,7 @@ class AppException extends Exception
 	const ERR_NOT_USER = 4;
 	const ERR_VALIDATION = 5;
 	const ERR_INVALID_TOKEN = 6;
+	const EMAIL_EXIST = 7;
 		
     protected $code;
 

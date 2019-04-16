@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
             ];
             return response()->json($json, 200);
         }
-        $exception_class =get_class($exception);
+        $exception_class = get_class($exception);
 
         if(in_array($exception_class, ['InvalidArgumentException', 'OAuthServerException', 'Illuminate\Auth\AuthenticationException'])) {
             $json = [
