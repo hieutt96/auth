@@ -10,6 +10,7 @@ use Auth;
 use Carbon\Carbon;
 use App\Exceptions\AppException;
 use Validator;
+use App\Events\SendEmailActive;
 
 class UserController extends Controller
 {
@@ -20,6 +21,7 @@ class UserController extends Controller
             
         }
     	$request->validate([
+            'name' => 'required',
             'email' => 'required|unique:users,email',
             'password' => 'required|min:6',
         ],[
@@ -33,6 +35,7 @@ class UserController extends Controller
     	$user->email = $request->email;
     	$user->password = bcrypt($request->password);
     	$user->save();
+        event(new SendEmailActive($user));
     	return $this->_responseJson([
             'user_id' => $user->id,
             'email' => $user->email,

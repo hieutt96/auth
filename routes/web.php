@@ -11,9 +11,11 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+// 	$user = App\Models\User::find(11);
+// 	event(new App\Events\SendEmailActive($user));
+//     return view('welcome');
+// });
 
 
 Auth::routes();
