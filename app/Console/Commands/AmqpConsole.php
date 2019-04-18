@@ -56,6 +56,7 @@ class AmqpConsole extends Command
                             $this->info($user);
                             if($user) {
                                 $user->notify(new SendEmailActiveNotification($user));
+                                Log::info('Đã send notification');
                             }
                             break;
                         

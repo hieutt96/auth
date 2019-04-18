@@ -15,7 +15,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+
     }
 
     /**
@@ -25,13 +25,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // dd(1);
-         // $job = (new CreateUser())
-         //            ->delay(Carbon::now()->everyMinute());
-
-        // dispatch($job);
-        // CreateUser::dispatchNow();
-        CreateUser::dispatch()->delay(now()->addMinutes(3));
         return view('home');
     }
 

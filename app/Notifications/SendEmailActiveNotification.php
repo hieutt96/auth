@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class SendEmailActiveNotification extends Notification
+class SendEmailActiveNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -31,7 +31,7 @@ class SendEmailActiveNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -61,7 +61,8 @@ class SendEmailActiveNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'user' => $this->user,
         ];
     }
+
 }
