@@ -6,6 +6,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\SendEmailActive;
 use Bschmitt\Amqp\Facades\Amqp;
+use Pusher;
 
 class SendEmailActiveListener
 {

@@ -7,6 +7,7 @@ use App\Models\User;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
 use Psr\Http\Message\ServerRequestInterface;
 use Auth;
+use App\Events\MessagePusher;
 use Carbon\Carbon;
 use App\Exceptions\AppException;
 use Validator;
