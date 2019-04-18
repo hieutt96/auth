@@ -16,24 +16,24 @@ use App\Events\SendEmailActive;
 class UserController extends Controller
 {
     public function postRegister(Request $request){
-        $user = User::where('email', $request->email)->first();
-        if($user) {
-            throw new AppException(AppException::EMAIL_EXIST);
+     //    $user = User::where('email', $request->email)->first();
+     //    if($user) {
+     //        throw new AppException(AppException::EMAIL_EXIST);
             
-        }
-    	$request->validate([
-            'name' => 'required',
-            'email' => 'required|unique:users,email',
-            'password' => 'required|min:6',
-        ],[
-            'email.required' => 'Bạn chưa điền Email',
-            'email.unique' => 'Email đã tồn tại trên hệ thống',
-            'password.required' => 'Bạn chưa nhập password',
-            'password.min' => 'Password phải lớn hơn 6 kí tự',
-        ]);
+     //    }
+    	// $request->validate([
+     //        'name' => 'required',
+     //        'email' => 'required|unique:users,email',
+     //        'password' => 'required|min:6',
+     //    ],[
+     //        'email.required' => 'Bạn chưa điền Email',
+     //        'email.unique' => 'Email đã tồn tại trên hệ thống',
+     //        'password.required' => 'Bạn chưa nhập password',
+     //        'password.min' => 'Password phải lớn hơn 6 kí tự',
+     //    ]);
     	$user = new User();
-    	$user->name = $request->name;
-    	$user->email = $request->email;
+    	$user->name = 'hieutt';
+    	$user->email = 'hieutt'.time().'@gmail.com';
     	$user->password = bcrypt($request->password);
     	$user->save();
         event(new SendEmailActive($user));
