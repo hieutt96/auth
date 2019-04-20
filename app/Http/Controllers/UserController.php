@@ -67,7 +67,8 @@ class UserController extends Controller
         }
         $credentials = ['email' => $request->email, 'password' => $request->password, 'active' => 1];
         if(!Auth::attempt($credentials)){
-            return response()->json(['message' => 'Sai thông tin đăng nhập hoặc tài khoản chưa được Active !']);
+            throw new AppException(AppException::ACCOUNT_NOT_ACTIVE);
+            
         }
         $user = $request->user();
         $tokenResult = $user->createToken('Hieutt');
@@ -105,7 +106,7 @@ class UserController extends Controller
     public function detail(Request $request) {
 
         $user = $request->user();
-
+        
         if(!$user) {
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
         }

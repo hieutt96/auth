@@ -23,7 +23,7 @@ Route::group(['prefix' => 'user'], function() {
 
 	Route::post('/login', 'UserController@postLogin')->name('user.post.login');
 
-	Route::get('/user/list', 'UserController@getList')->middleware('auth:api')->name('user.list');
+	Route::get('/list', 'UserController@getList')->middleware('auth:api')->name('user.list');
 
-	Route::get('/user/detail', 'UserController@detail')->middleware('auth:api')->name('user.detail');
+	Route::get('/detail', 'UserController@detail')->middleware('auth:api')->name('user.detail');
 });	

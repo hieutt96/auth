@@ -14,10 +14,10 @@ class AddColumnTableUser extends Migration
     public function up()
     {
         Schema::table('users', function(Blueprint $table) {
-            $table->integer('lvl',2)->nullable();
+            $table->string('lvl',2)->nullable();
             $table->string('address', 255)->nullable();
             $table->string('image', 80)->nullable();
-            $table->string('social_id', 80);
+            $table->string('social_id', 80)->nullable();
         });
     }
 
