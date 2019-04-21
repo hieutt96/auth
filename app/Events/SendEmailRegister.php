@@ -11,7 +11,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Models\User;
 
-class SendEmailActive implements ShouldBroadcast
+class SendEmailRegister
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -34,11 +34,6 @@ class SendEmailActive implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('name-channel');
-    }
-
-    public function broadcastAs()
-    {
-        return 'send.user.create';
+        return new PrivateChannel('channel-name');
     }
 }

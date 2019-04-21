@@ -26,4 +26,8 @@ Route::group(['prefix' => 'user'], function() {
 	Route::get('/list', 'UserController@getList')->middleware('auth:api')->name('user.list');
 
 	Route::get('/detail', 'UserController@detail')->middleware('auth:api')->name('user.detail');
+
+	Route::post('/active', 'UserController@active')->name('user.active');
 });	
+
+

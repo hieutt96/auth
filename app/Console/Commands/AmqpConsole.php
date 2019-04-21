@@ -7,6 +7,7 @@ use Log;
 use Bschmitt\Amqp\Facades\Amqp;
 use App\Notifications\SendEmailActiveNotification;
 use App\User;
+use App\Notifications\SendEmailRegisterNotification;
 
 class AmqpConsole extends Command
 {
@@ -49,13 +50,13 @@ class AmqpConsole extends Command
                 Log::info($event);
                 if($event) {
                     switch ($event['name']) {
-                        case 'EmailActive':
-                            $this->info("Sending Email Active User notifications");
+                        case 'EmailRegister':
+                            $this->info("Sending Email Register User notifications");
                             $userId = $event['data']['user']['id'];
                             $user = User::find($userId);
                             $this->info($user);
                             if($user) {
-                                $user->notify(new SendEmailActiveNotification($user));
+                                $user->notify(new SendEmailRegisterNotification($user));
                                 Log::info('Đã send notification');
                             }
                             break;
@@ -68,6 +69,8 @@ class AmqpConsole extends Command
             }catch(\Exception $e) {
                 Log::error($e->getMessage());
             }
-        });
+        }, [
+            'persistent' => true// required if you want to listen forever
+        ]);
     }
 }

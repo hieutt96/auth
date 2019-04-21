@@ -7,7 +7,9 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\SendEmailActive;
+use App\Events\SendEmailRegister;
 use App\Listeners\SendEmailActiveListener;
+use App\Listeners\SendEmailRegisterListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         SendEmailActive::class => [
             SendEmailActiveListener::class,
+        ],
+        SendEmailRegister::class => [
+            SendEmailRegisterListener::class,
         ],
     ];
 
