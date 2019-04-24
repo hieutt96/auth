@@ -15,7 +15,7 @@ use App\Events\SendEmailRegister;
 
 class UserController extends Controller
 {
-    const TOKEN_EXPIRED = 20;
+    const TOKEN_EXPIRED = 15;
 
     public function postRegister(Request $request){
         $user = User::where('email', $request->email)->first();
@@ -77,11 +77,11 @@ class UserController extends Controller
         $user = $request->user();
         $tokenResult = $user->createToken('Hieutt');
         // dd($tokenResult);
-        $token = $tokenResult->token;
+        // $token = $tokenResult->token;
         
-        $token->expires_at = Carbon::now()->addMinutes(self::TOKEN_EXPIRED);
+        // $token->expires_at = Carbon::now()->addMinutes(self::TOKEN_EXPIRED);
         // dd($token->expires_at);
-        $token->save();
+        // $token->save();
         return $this->_responseJson([
             'user_id' => $user->id,
             'name' => $user->name,
