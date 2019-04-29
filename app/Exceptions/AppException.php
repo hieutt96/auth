@@ -21,6 +21,8 @@ class AppException extends Exception
 	const EMAIL_EXIST = 7;
 	const ACCOUNT_NO_EXIST = 8;
 	const ACCOUNT_NOT_ACTIVE = 9;
+	const USER_NOT_EXIST = 10;
+	const ERR_PASSWORD_INVAILD = 11;
 
     protected $code;
 

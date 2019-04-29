@@ -146,4 +146,43 @@ class UserController extends Controller
             'created_at' => $user->created_at,
         ]);
     }
+
+    public function checkExists(Request $request) {
+
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if(!$user) {
+            throw new AppException(AppException::USER_NOT_EXIST);
+            
+        }
+        return $this->_responseJson([
+            'user_id' => $user->id,
+            'name' => $user->name,
+            'email'=>$request->email,
+            'lvl' => $user->lvl,
+            'active' => $user->active,
+            'created_at' => $user->created_at,
+        ]);
+    }
+
+    public function checkPassword(Request $request) {
+
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $credentials = ['email' => $request->email, 'password' => $request->password, 'active' => 1];
+        if(!Auth::attempt($credentials)){
+            throw new AppException(AppException::USER_NOT_EXIST);
+            
+        }
+        $user = User::where('email', $request->email)->first();
+        return $this->_responseJson([
+            'code' => '00',
+        ]);
+    }
 }   

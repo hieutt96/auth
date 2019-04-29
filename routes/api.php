@@ -30,4 +30,8 @@ Route::group(['prefix' => 'user'], function() {
 	Route::post('/active', 'UserController@active')->name('user.active');
 });	
 
+Route::post('/check-user-exists', 'UserController@checkExists')->name('user.check.exists');
+
+Route::post('/check-password', 'UserController@checkPassword')->name('user.check.password');
+
 

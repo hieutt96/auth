@@ -11,4 +11,6 @@ return
 		\App\Exceptions\AppException::EMAIL_EXIST => 'Email đã tồn tại trên hệ thống',
 		\App\Exceptions\AppException::ACCOUNT_NO_EXIST => 'Không tìm thấy tài khoản hợp lệ',
 		\App\Exceptions\AppException::ACCOUNT_NOT_ACTIVE => 'Sai thông tin đăng nhập hoặc tài khoản chưa được Active !',
+		\App\Exceptions\AppException::USER_NOT_EXIST => 'Không tìm thấy người dùng với thông tin này',
+		\App\Exceptions\AppException::ERR_PASSWORD_INVAILD => 'Sai mật khẩu đăng nhập',
 	];
