@@ -174,10 +174,10 @@ class UserController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+        
         $credentials = ['email' => $request->email, 'password' => $request->password, 'active' => 1];
         if(!Auth::attempt($credentials)){
-            throw new AppException(AppException::USER_NOT_EXIST);
+            throw new AppException(AppException::ERR_PASSWORD_INVAILD);
             
         }
         $user = User::where('email', $request->email)->first();
