@@ -8,6 +8,8 @@ use Bschmitt\Amqp\Facades\Amqp;
 use App\Notifications\SendEmailActiveNotification;
 use App\User;
 use App\Notifications\SendEmailRegisterNotification;
+use App\Notifications\TransferSuccessNotification;
+use App\Notifications\TransferCreateNotification;
 
 class AmqpConsole extends Command
 {
@@ -44,7 +46,7 @@ class AmqpConsole extends Command
     {
         Amqp::consume('wallet-queue', function($message, $resolver){
             // Log::info(json_decode($message->body, true));
-            $resolver->acknowledge($message);
+            // $resolver->acknowledge($message);
             try {
                 $event = json_decode($message->body, true);
                 Log::info($event);
@@ -60,7 +62,25 @@ class AmqpConsole extends Command
                                 Log::info('Đã send notification');
                             }
                             break;
-                        
+                        case 'TransferSuccess':
+                            $this->info("Sending Transfer Success notifications");
+                            $userFromId = $event['data']['account_from']['user_id'];
+                            $userFrom = User::find($userFromId);
+
+                            $userToId = $event['data']['account_to']['user_id'];
+                            $userTo = User::find($userToId);
+
+                            $amount = $event['data']['amount'];
+                            if($userFrom) {
+
+                                $userFrom->notify(new TransferCreateNotification($userFrom, $userTo, $amount));
+                                Log::info('Đã send notification transfer success');
+                            }
+                            if($userTo) {
+                                $userTo->notify(new TransferSuccessNotification($userFrom, $userTo, $amount));
+                                Log::info('Đã send notification transfer create');
+                            }
+                            break;
                         default:
                             # code...
                             break;
@@ -69,8 +89,9 @@ class AmqpConsole extends Command
             }catch(\Exception $e) {
                 Log::error($e->getMessage());
             }
+            $resolver->acknowledge($message);
         }, [
-            'persistent' => true// required if you want to listen forever
+            'persistent' => true,// required if you want to listen forever
         ]);
     }
 }
