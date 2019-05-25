@@ -28,6 +28,12 @@ Route::group(['prefix' => 'user'], function() {
 	Route::get('/detail', 'UserController@detail')->middleware('auth:api')->name('user.detail');
 
 	Route::post('/active', 'UserController@active')->name('user.active');
+
+	Route::post('/create-google2fa-secret', 'UserController@createGoogle2fa')->name('user.create.google2fa')->middleware('auth:api');
+
+	Route::post('/off-google2fa', 'UserController@offGoogle2fa')->name('user.off.google2fa')->middleware('auth:api');
+
+	Route::get('/detail-google2fa', 'UserController@detailGoogle2fa')->name('user.detail.google2fa')->middleware('auth:api');
 });	
 
 Route::post('/check-user-exists', 'UserController@checkExists')->name('user.check.exists');

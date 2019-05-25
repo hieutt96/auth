@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\Exceptions\AppException;
 use Validator;
 use App\Events\SendEmailRegister;
+use App\Google2faSecret;
 
 class UserController extends Controller
 {
@@ -184,5 +185,70 @@ class UserController extends Controller
         return $this->_responseJson([
             'code' => '00',
         ]);
+    }
+
+    public function createGoogle2fa(Request $request) {
+
+        $user = $request->user();
+        if(!$user) {
+            throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
+            
+        }
+        $google2fa = app('pragmarx.google2fa');
+        $secretKey = $google2fa->generateSecretKey();
+        $url = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chld=M|0&chl=otpauth://totp/Mywallet2FA?secret='.$secretKey;
+
+        $google2faSecret = new Google2faSecret;
+        $google2faSecret->user_id = $user->id;
+        $google2faSecret->stat = 1;
+        $google2faSecret->secret = $secretKey;
+        $google2faSecret->save();
+
+        return $this->_responseJson([
+            'user_id' => $user->id,
+            'secret' => $secretKey,
+            'url' => $url,
+        ]);
+    }
+
+    public function offGoogle2fa(Request $request) {
+
+        $user = $request->user();
+        if(!$user) {
+            throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
+            
+        }
+        $google2fa = Google2faSecret::where('user_id', $user->id);
+        if($google2fa) {
+            throw new AppException(AppException::ERR_SYSTEM);
+            
+        }
+        $google2fa->stat = 0;
+        $google2fa->save();
+        return $this->_responseJson([
+            'code' => AppException::ERR_NONE,
+        ]);
+    }
+
+    public function detailGoogle2fa(Request $request) {
+
+        $user = $request->user();
+        if(!$user) {
+            throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
+            
+        }
+        $google2fa = Google2faSecret::where('user_id', $user->id);
+        if(!$google2fa) {
+            return $this->_responseJson([
+                'status' => '00',
+            ]);
+        }else {
+
+            return $this->_responseJson([
+                'user_id' => $user->id,
+                'secret' => $google2fa->secret,
+                'stat' => $google2fa->stat,
+            ]);
+        }
     }
 }   
