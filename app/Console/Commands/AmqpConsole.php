@@ -10,6 +10,8 @@ use App\User;
 use App\Notifications\SendEmailRegisterNotification;
 use App\Notifications\TransferSuccessNotification;
 use App\Notifications\TransferCreateNotification;
+use App\Notifications\RechargeSuccessNotification;
+use App\Notifications\WithdrawalSuccessNotification;
 
 class AmqpConsole extends Command
 {
@@ -81,6 +83,28 @@ class AmqpConsole extends Command
                                 Log::info('Đã send notification transfer create');
                             }
                             break;
+                        case 'RechargeSuccess':
+                            $this->info('Notification Recharge Success');
+                            $userId = $event['data']['recharge']['user_id'];
+                            $user = User::find($userId);
+                            if($user) {
+                                $recharge = $event['data']['recharge'];
+                                $user->notify(new RechargeSuccessNotification($user, $recharge));
+                                Log::info('Đã gửi notification nạp tiền thành công');
+                            }
+                            break;
+
+                        case 'WithdrawalSuccess':
+                            $this->info('Notification Withdrawal Success');
+                            $userId = $event['data']['withdrawal']['user_id'];
+                            $user = User::find($userId);
+                            if($user) {
+                                $withdrawal = $event['data']['withdrawal'];
+                                $user->notify(new WithdrawalSuccessNotification($user, $withdrawal));
+                                Log::info('Đã gửi notification rút tiền thành công');
+                            }
+                            break;
+
                         default:
                             # code...
                             break;
