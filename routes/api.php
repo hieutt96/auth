@@ -34,6 +34,7 @@ Route::group(['prefix' => 'user'], function() {
 	Route::post('/off-google2fa', 'UserController@offGoogle2fa')->name('user.off.google2fa')->middleware('auth:api');
 
 	Route::get('/detail-google2fa', 'UserController@detailGoogle2fa')->name('user.detail.google2fa')->middleware('auth:api');
+	Route::post('/edit', 'UserController@edit')->name('user.edit')->middleware('auth:api');
 });	
 
 Route::post('/check-user-exists', 'UserController@checkExists')->name('user.check.exists');

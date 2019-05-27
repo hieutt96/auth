@@ -213,9 +213,17 @@ class UserController extends Controller
 
     public function offGoogle2fa(Request $request) {
 
+        $request->validate([
+            'password' => 'required',
+        ]);
         $user = $request->user();
         if(!$user) {
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
+            
+        }
+        $credentials = ['email' => $user->email, 'password' => $request->password, 'active' => 1];
+        if(!Auth::attempt($credentials)){
+            throw new AppException(AppException::ERR_PASSWORD_INVAILD);
             
         }
         $google2fa = Google2faSecret::where('user_id', $user->id);
@@ -231,16 +239,21 @@ class UserController extends Controller
     }
 
     public function detailGoogle2fa(Request $request) {
-
+        
         $user = $request->user();
         if(!$user) {
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
             
         }
-        $google2fa = Google2faSecret::where('user_id', $user->id);
+        $google2fa = Google2faSecret::where('user_id', $user->id)->first();
         if(!$google2fa) {
             return $this->_responseJson([
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'active' => $user->active,
+                'address' => $user->address,
                 'status' => '00',
+                'created_at' => $user->created_at,
             ]);
         }else {
 
@@ -248,7 +261,43 @@ class UserController extends Controller
                 'user_id' => $user->id,
                 'secret' => $google2fa->secret,
                 'stat' => $google2fa->stat,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'active' => $user->active,
+                'address' => $user->address,
+                'created_at' => $user->created_at,
+                'status' => '01',
             ]);
         }
+    }
+
+    public function edit(Request $request) {
+
+        $request->validate([
+            'address' => 'required',
+            'phone' => 'required',
+            'social_id' => 'required',
+        ]);
+        $user = $request->user();
+        $user->phone = $request->phone;
+        $user->address = $request->address;
+        $user->social_id = $request->social_id;
+        $user->save();
+
+        $google2fa = Google2faSecret::where('user_id', $user->id)->first();
+        if($google2fa) {
+            $status = '01';
+        }else {
+            $status = '00';
+        }
+        return $this->_responseJson([
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'active' => $user->active,
+            'address' => $user->address,
+            'social_id' => $user->social_id,
+            'status' => $status,
+        ]);
     }
 }   
