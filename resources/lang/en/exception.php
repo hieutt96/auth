@@ -14,4 +14,5 @@ return
 		\App\Exceptions\AppException::USER_NOT_EXIST => 'Không tìm thấy người dùng với thông tin này',
 		\App\Exceptions\AppException::ERR_PASSWORD_INVAILD => 'Sai mật khẩu đăng nhập',
 		\App\Exceptions\AppException::ERR_NOTIFICATION_NOT_FOUND => 'Không tìm thấy thông báo',
+		\App\Exceptions\AppException::ERR_GOOGLE2FA_INVAILD => 'Sai mã Google Authenticate',
 	];

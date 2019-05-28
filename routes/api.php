@@ -23,6 +23,8 @@ Route::group(['prefix' => 'user'], function() {
 
 	Route::post('/login', 'UserController@postLogin')->name('user.post.login');
 
+	Route::post('/login/verify-code', 'UserController@postLoginVerifyCode')->name('user.login.verify.code')->middleware('auth:api');
+
 	Route::get('/list', 'UserController@getList')->middleware('auth:api')->name('user.list');
 
 	Route::get('/detail', 'UserController@detail')->middleware('auth:api')->name('user.detail');
@@ -34,6 +36,7 @@ Route::group(['prefix' => 'user'], function() {
 	Route::post('/off-google2fa', 'UserController@offGoogle2fa')->name('user.off.google2fa')->middleware('auth:api');
 
 	Route::get('/detail-google2fa', 'UserController@detailGoogle2fa')->name('user.detail.google2fa')->middleware('auth:api');
+
 	Route::post('/edit', 'UserController@edit')->name('user.edit')->middleware('auth:api');
 });	
 

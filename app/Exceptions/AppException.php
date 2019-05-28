@@ -24,6 +24,7 @@ class AppException extends Exception
 	const USER_NOT_EXIST = 10;
 	const ERR_PASSWORD_INVAILD = 11;
 	const ERR_NOTIFICATION_NOT_FOUND = 12;
+	const ERR_GOOGLE2FA_INVAILD = 13;
 	
     protected $code;
 

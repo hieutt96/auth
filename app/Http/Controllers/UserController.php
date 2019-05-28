@@ -13,6 +13,8 @@ use App\Exceptions\AppException;
 use Validator;
 use App\Events\SendEmailRegister;
 use App\Google2faSecret;
+use Illuminate\Support\Facades\Hash;
+use PragmaRX\Google2FAQRCode\Google2FA;
 
 class UserController extends Controller
 {
@@ -77,12 +79,7 @@ class UserController extends Controller
         }
         $user = $request->user();
         $tokenResult = $user->createToken('Hieutt');
-        // dd($tokenResult);
-        // $token = $tokenResult->token;
-        
-        // $token->expires_at = Carbon::now()->addMinutes(self::TOKEN_EXPIRED);
-        // dd($token->expires_at);
-        // $token->save();
+
         return $this->_responseJson([
             'user_id' => $user->id,
             'name' => $user->name,
@@ -93,6 +90,38 @@ class UserController extends Controller
             'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString(),
             'created_at' => $user->created_at,
         ]);
+    }
+
+    public function postLoginVerifyCode(Request $request) {
+
+        $request->validate([
+            'verify_code' => 'required',
+        ]);
+        $user = $request->user();
+        $google2fa = Google2faSecret::where('user_id', $user->id)->first();
+        if(!$google2fa) {
+
+            throw new AppException(AppException::ERR_SYSTEM);
+            
+        }
+        $secret = $google2fa->secret;
+        $g2fa = new Google2FA();
+        if($g2fa->verifyKey($secret, $request->verify_code)) {
+
+            return $this->_responseJson([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'access_token' => $request->header('Authorization'),
+                'email'=>$user->email,
+                'lvl' => $user->lvl,
+                'active' => $user->active,
+                'created_at' => $user->created_at,
+            ]);
+        }else {
+
+            throw new AppException(AppException::ERR_GOOGLE2FA_INVAILD);
+            
+        }
     }
 
     public function getList(Request $request) {
@@ -189,26 +218,44 @@ class UserController extends Controller
 
     public function createGoogle2fa(Request $request) {
 
+        $request->validate([
+            'password' => 'required',
+        ]);
+
         $user = $request->user();
         if(!$user) {
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
             
         }
-        $google2fa = app('pragmarx.google2fa');
-        $secretKey = $google2fa->generateSecretKey();
-        $url = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chld=M|0&chl=otpauth://totp/Mywallet2FA?secret='.$secretKey;
+        
+        if(Hash::check($request->password, $user->password)){
+            $google2fa = Google2faSecret::where('user_id', $user->id)->first();
+            if($google2fa) {
+                $secretKey = $google2fa->secret;
+                $url = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chld=M|0&chl=otpauth://totp/Mywallet2FA?secret='.$secretKey;
+            }else {
+                $google2fa = app('pragmarx.google2fa');
+                $secretKey = $google2fa->generateSecretKey();
+                $url = 'https://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chld=M|0&chl=otpauth://totp/Mywallet2FA?secret='.$secretKey;
 
-        $google2faSecret = new Google2faSecret;
-        $google2faSecret->user_id = $user->id;
-        $google2faSecret->stat = 1;
-        $google2faSecret->secret = $secretKey;
-        $google2faSecret->save();
+                $google2faSecret = new Google2faSecret;
+                $google2faSecret->user_id = $user->id;
+                $google2faSecret->stat = 1;
+                $google2faSecret->secret = $secretKey;
+                $google2faSecret->save();
+            }
 
-        return $this->_responseJson([
-            'user_id' => $user->id,
-            'secret' => $secretKey,
-            'url' => $url,
-        ]);
+            return $this->_responseJson([
+                'user_id' => $user->id,
+                'secret' => $secretKey,
+                'url' => $url,
+            ]);
+            
+        }else {
+            throw new AppException(AppException::ERR_PASSWORD_INVAILD);
+            
+        }
+        
     }
 
     public function offGoogle2fa(Request $request) {
@@ -221,21 +268,22 @@ class UserController extends Controller
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
             
         }
-        $credentials = ['email' => $user->email, 'password' => $request->password, 'active' => 1];
-        if(!Auth::attempt($credentials)){
+        if(Hash::check($request->password, $user->password)) {
+
+            $google2fa = Google2faSecret::where('user_id', $user->id)->first();
+            if(!$google2fa) {
+
+                throw new AppException(AppException::ERR_SYSTEM);
+                
+            }
+            $google2fa->stat = 0;
+            $google2fa->save();
+            return $this->_responseJson([
+                'code' => AppException::ERR_NONE,
+            ]);
+        }else {
             throw new AppException(AppException::ERR_PASSWORD_INVAILD);
-            
         }
-        $google2fa = Google2faSecret::where('user_id', $user->id);
-        if($google2fa) {
-            throw new AppException(AppException::ERR_SYSTEM);
-            
-        }
-        $google2fa->stat = 0;
-        $google2fa->save();
-        return $this->_responseJson([
-            'code' => AppException::ERR_NONE,
-        ]);
     }
 
     public function detailGoogle2fa(Request $request) {
@@ -245,7 +293,7 @@ class UserController extends Controller
             throw new AppException(AppException::ERR_ACCOUNT_NOT_FOUND);
             
         }
-        $google2fa = Google2faSecret::where('user_id', $user->id)->first();
+        $google2fa = Google2faSecret::where('user_id', $user->id)->where('stat', 1)->first();
         if(!$google2fa) {
             return $this->_responseJson([
                 'email' => $user->email,
