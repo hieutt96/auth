@@ -13,4 +13,5 @@ return
 		\App\Exceptions\AppException::ACCOUNT_NOT_ACTIVE => 'Sai thông tin đăng nhập hoặc tài khoản chưa được Active !',
 		\App\Exceptions\AppException::USER_NOT_EXIST => 'Không tìm thấy người dùng với thông tin này',
 		\App\Exceptions\AppException::ERR_PASSWORD_INVAILD => 'Sai mật khẩu đăng nhập',
+		\App\Exceptions\AppException::ERR_NOTIFICATION_NOT_FOUND => 'Không tìm thấy thông báo',
 	];

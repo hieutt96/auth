@@ -42,3 +42,5 @@ Route::post('/check-user-exists', 'UserController@checkExists')->name('user.chec
 Route::post('/check-password', 'UserController@checkPassword')->name('user.check.password');
 
 Route::get('/txn-list-notification', 'TxnController@list')->name('txn.list')->middleware('auth:api');
+
+Route::get('/txn-detail', 'TxnController@detail')->name('txn.detail')->middleware('auth:api');

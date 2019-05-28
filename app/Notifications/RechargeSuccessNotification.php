@@ -49,6 +49,8 @@ class RechargeSuccessNotification extends Notification
             $typeName = 'VnPay';
         }elseif($type == 2) {
             $typeName = 'MoMo';
+        }elseif($type = 3) {
+            $typeName = 'OnePay';
         }else {
             $typeName = '';
         }
@@ -72,6 +74,8 @@ class RechargeSuccessNotification extends Notification
             $typeName = 'VnPay';
         }elseif($type == 2) {
             $typeName = 'MoMo';
+        }elseif($type == 3) {
+            $typeName = 'OnePay';
         }else {
             $typeName = '';
         }
