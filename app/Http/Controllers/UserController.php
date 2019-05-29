@@ -348,4 +348,19 @@ class UserController extends Controller
             'status' => $status,
         ]);
     }
+
+    public function getUser(Request $request) {
+
+        $request->validate([
+            'email' => 'required',
+        ]);
+        $user = User::where('email', $request->email)->first();
+        if(!$user) {
+            throw new AppException(AppException::USER_NOT_EXIST);
+            
+        }
+        return $this->_responseJson([
+            'user_id' => $user->id,
+        ]);
+    }
 }   
